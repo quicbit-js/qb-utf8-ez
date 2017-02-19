@@ -1,6 +1,8 @@
 # qb-utf8-ez
 
 Easy-to-use UTF-8 encoding functions that work in all browsers (except ancient < IE 5.5).
+Based on tiny implementations (qb-utf8-to-str-tiny and qb-utf8-from-str-tiny), which are
+tiny and good for small decoding jobs, but not fast for very large files.
 
     var utf8 = require('qb-utf8-ez').utf8;
     var buf = utf8('hello. 你好');
