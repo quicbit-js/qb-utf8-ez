@@ -133,8 +133,18 @@ function join(buffers, joinbuf) {
     return ret
 }
 
+function escape_illegal(buf, opt) {
+    return escape_ranges(
+        buf,
+        illegal_bytes(buf, opt),
+        (opt && opt.escape) || '?',
+        opt
+    )
+}
+
 module.exports = {
     buffer: buffer,
+    escape_illegal: escape_illegal,
     escape_ranges: escape_ranges,
     fill: fill,
     illegal_bytes: illegal_bytes,

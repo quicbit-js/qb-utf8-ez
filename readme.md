@@ -99,3 +99,8 @@ be an array of array-like objects with byte/integer values.  joinbuf can value a
 by the <code>buffer()</code> function such as string or array of code points.
 
 
+## escape_illegal(buffer, opt)
+
+Escape illegal characters in the given buffer in place or returning a new buffer. 
+Options <code>escape</code>, <code>beg</code>, and <code>end</code> work as they
+do with <code>string()</code>

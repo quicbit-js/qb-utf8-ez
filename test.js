@@ -65,6 +65,7 @@ test('escape_ranges - hex', function(t) {
             [ [0x6A,0x6B,0x6C],   [[1,2]],   '!{%H}',     null,            'j!{6B}l'      ],
             [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     null,            'jk!{6C}'      ],
             [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:1},         'k!{6C}'       ],
+            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:3},         ''         ],
             [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:1, end:2},  'k'       ],
         ],
         function(buf, ranges, escape, opt) {
@@ -72,6 +73,19 @@ test('escape_ranges - hex', function(t) {
         }
 
     )
+})
+
+test('escape_illegal', function(t) {
+    t.tableAssert([
+        [ 'buf',       'opt',           'exp'                                   ],
+        [ '在嚴',       null,            [0xE5,0x9C,0xA8,0xE5,0x9A,0xB4]        ],
+        [ '在嚴',       {beg:1},         [0xE5,0x3F,0x3F,0xE5,0x9A,0xB4]        ],
+        [ '在嚴',       {beg:2},         [0xE5,0x9C,0x3F,0xE5,0x9A,0xB4]        ],
+        [ '在嚴',       {beg:2,end:5},   [0xE5,0x9C,0x3F,0x3F,0x3F,0xB4]        ],
+    ], function(buf, opt) {
+        return utf8.escape_illegal(utf8.buffer(buf), opt)
+    })
+
 })
 
 test('buffer and string in harmony and at peace with the world', function(t) {
