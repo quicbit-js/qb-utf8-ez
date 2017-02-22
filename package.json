@@ -1,6 +1,6 @@
 {
   "name": "qb-utf8-ez",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Easy-to-use functions for encoding/decoding UTF-8 in the browser",
   "homepage": "https://github.com/quicbit-js/qb-utf8-ez",
   "url": "https://github.com/quicbit-js/qb-utf8-ez/issues",
