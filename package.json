@@ -8,7 +8,7 @@
   "repository": "quicbit-js/qb-utf8-ez",
   "dependencies": {
     "qb-utf8-from-str-tiny": "^1.0.0",
-    "qb-utf8-illegal-bytes": "^1.0.0",
+    "qb-utf8-illegal-bytes": "^1.0.1",
     "qb-utf8-to-str-tiny": "^1.0.1"
   },
   "devDependencies": {
