@@ -90,5 +90,12 @@ Fill up a buffer with a smaller buffer sample which may be a string or array-lik
         end:        index to end reading (exclusive)
         escape:     handling for illegal bytes (same as string(), above) (default is '?')
         
+## join(buffers, joinbuf)
+
+Like string.join(), but joins together arrays/buffers of bytes.  Joins together buffers
+into one buffer with <code>joinbuf</code> as a separator between each.
+<code>buffers</code> can
+be an array of array-like objects with byte/integer values.  joinbuf can value accepted
+by the <code>buffer()</code> function such as string or array of code points.
 
 

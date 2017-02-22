@@ -90,16 +90,16 @@ test('buffer and string in harmony and at peace with the world', function(t) {
 test('fill', function(t) {
     t.tableAssert([
         [ 'blen',       'sample',    'opt',      'exp'          ],
-        [ 14,           'ñup𐂃',     null,       'ñup𐂃ñup??'  ],
-        [ 15,           'ñup𐂃',     null,       'ñup𐂃ñup???'  ],
-        [ 16,           'ñup𐂃',     null,       'ñup𐂃ñup𐂃'  ],
-        [ 17,           'ñup𐂃',     null,       'ñup𐂃ñup𐂃?'  ],
-        [ 18,           'ñup𐂃',     null,       'ñup𐂃ñup𐂃ñ'  ],
-        [ 19,           'ñup𐂃',     null,       'ñup𐂃ñup𐂃ñu'  ],
-        [ 19,           'ñup𐂃',     {beg:1},    '?ñup𐂃ñup𐂃ñ'  ],     // buf[0] is undefined
-        [ 19,           'ñup𐂃',     {beg:2},    '??ñup𐂃ñup𐂃?'  ],
-        [ 19,           'ñup𐂃',     {beg:2, end:19},    '??ñup𐂃ñup𐂃?'  ],
-        [ 19,           'ñup𐂃',     {beg:2, end:18},    '??ñup𐂃ñup𐂃?'  ],
+        [ 14,           'ñup𐂃',     null,               'ñup𐂃ñup??'       ],
+        [ 15,           'ñup𐂃',     null,               'ñup𐂃ñup???'      ],
+        [ 16,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃'       ],
+        [ 17,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃?'      ],
+        [ 18,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃ñ'      ],
+        [ 19,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃ñu'     ],
+        [ 19,           'ñup𐂃',     {beg:1},            '?ñup𐂃ñup𐂃ñ'     ],     // buf[0] is undefined
+        [ 19,           'ñup𐂃',     {beg:2},            '??ñup𐂃ñup𐂃?'    ],
+        [ 19,           'ñup𐂃',     {beg:2, end:19},    '??ñup𐂃ñup𐂃?'    ],
+        [ 19,           'ñup𐂃',     {beg:2, end:18},    '??ñup𐂃ñup𐂃?'    ],
         [ 19,           'ñup𐂃',     {beg:2, end:17},    '??ñup𐂃ñup?????'  ],
         [ 19,           'ñup𐂃',     {beg:2, end:16},    '??ñup𐂃ñup?????'  ],
 
@@ -115,6 +115,22 @@ test('buffer and string - all ascii', function(t) {
         t.same(utf8.buffer(utf8.string([i])), [i], t.desc('ascii', [i], i))
     }
     t.end()
+})
+
+test('join', function(t) {
+    t.tableAssert([
+        [ 'buffers',                         'joinbuf',          'exp'     ],
+        [ ['a'],                             ':',                'a'       ],
+        [ ['a','b','c'],                     ':',                'a:b:c'   ],
+        [ [[0x61,0x62],[0x63,0x64]],         '',                 'abcd'    ],
+        [ [[0x61,0x62],[0x63,0x64]],         0x40,        'ab@cd'    ],
+        [ [[0x61,0x62],[0x63,0x64]],         [0x40],             'ab@cd'    ],
+        [ [[0x61,0x62],[0x63,0x64]],         [0x39,0x40],        'ab9@cd'    ],
+    ], function(buffers, joinbuf) {
+        buffers = buffers.map(function(b) { return utf8.buffer(b) })
+        var ret = utf8.join(buffers, joinbuf)
+        return utf8.string(ret)
+    })
 })
 
 test('utf8 errors', function(t) {

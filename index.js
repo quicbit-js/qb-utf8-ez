@@ -119,10 +119,25 @@ function string(buf, opt) {
     return utf8_to_str(buf)
 }
 
+// like String.join(), but joins together array-like buffers
+function join(buffers, joinbuf) {
+    var ret = [], ri = 0
+    joinbuf = buffer(joinbuf)
+    var jlen = joinbuf.length
+    buffers.forEach(function(buf, i) {
+        if(i !== 0) {
+            for(var ji=0; ji<jlen; ji++) { ret[ri++] = joinbuf[ji] }
+        }
+        for(var bi=0, blen=buf.length; bi<blen; bi++) { ret[ri++] = buf[bi] }
+    })
+    return ret
+}
+
 module.exports = {
-    fill: fill,
-    escape_ranges: escape_ranges,
-    illegal_bytes: illegal_bytes,
     buffer: buffer,
+    escape_ranges: escape_ranges,
+    fill: fill,
+    illegal_bytes: illegal_bytes,
+    join: join,
     string: string
 }
