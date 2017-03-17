@@ -1,8 +1,50 @@
 # qb-utf8-ez
 
+[![npm][npm-image]][npm-url]
+[![downloads][downloads-image]][npm-url]
+[![bitHound Dependencies][proddep-image]][proddep-link]
+[![dev dependencies][devdep-image]][devdep-link]
+[![code analysis][code-image]][code-link]
+
+[npm-image]:       https://img.shields.io/npm/v/qb-utf8-ez.svg
+[downloads-image]: https://img.shields.io/npm/dm/qb-utf8-ez.svg
+[npm-url]:         https://npmjs.org/package/qb-utf8-ez
+[proddep-image]:   https://www.bithound.io/github/quicbit-js/qb-utf8-ez/badges/dependencies.svg
+[proddep-link]:    https://www.bithound.io/github/quicbit-js/qb-utf8-ez/master/dependencies/npm
+[devdep-image]:    https://www.bithound.io/github/quicbit-js/qb-utf8-ez/badges/devDependencies.svg
+[devdep-link]:     https://www.bithound.io/github/quicbit-js/qb-utf8-ez/master/dependencies/npm
+[code-image]:      https://www.bithound.io/github/quicbit-js/qb-utf8-ez/badges/code.svg
+[code-link]:       https://www.bithound.io/github/quicbit-js/qb-utf8-ez
+
 Easy-to-use UTF-8 encoding and decoding that work in all browsers (except ancient < IE 5.5).
 Based on tiny implementations (qb-utf8-to-str-tiny and qb-utf8-from-str-tiny), which are
 tiny and good for small decoding jobs, but not fast for very large files.
+
+**Complies with the 100% test coverage and minimum dependency requirements** of 
+[qb-standard](http://github.com/quicbit-js/qb-standard) . 
+
+
+# Install
+
+    install qb-utf8-ez
+    
+# API Update 2.x -> 3.x
+
+Functions that take array-like parameters and ranges have been updated to work with
+terms defined in the [glossary](https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md).
+Namely, functions of the form 
+* **function ( buf, beg, end )** 
+* **function ( buf, {beg:0, end:10} )**
+
+have been updated to 
+* **function ( [src][src-link], [off][off-link], [lim][lim-link] )** 
+* **function ( [src][src-link], {[off][off-link]:0, [lim][lim-link]:10 } )** 
+
+[src-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#src-source
+[off-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#off-offset
+[lim-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#lim-limit
+   
+# Usage
 
     var utf8 = require('qb-utf8-ez');
     
@@ -24,23 +66,22 @@ Prints:
 
 ## buffer(value, options)
 
-// Return an array of UTF-8 encoded bytes for the given value 'v'
-// v may be:
-//
-// options:
-//      fill_to_length: <integer> if set, a buffer of the given length will be returned, filled with encoded values
-//                                copied from v.  Invalid truncated encodings are replaced with the
-//                                option.fill_byte value (defaults to ascii '.').
-//      fill_byte: <string>       defaults to '.'.  This ascii padding will be used to fill end of buffer to avoid truncated encodings.
-//
+same as utf8 (old function name)
 
-Convert a value to a buffer (array) of UTF-8 encoded bytes.  
+## utf8(value, options)
 
-    options
-        beg:            index to start reading (inclusive)
-        end:            index to end reading (exclusive)
-        fill_to_length  if set, a buffer of this length is returned, filled with repeating
-                        inserts of the value after it is converted to UTF-8.
+    Return an array or buffer of UTF-8 encoded bytes for the given value 'v'
+    v may be:
+    
+    options:
+        ret_type:        (string) 'array', 'buffer', or 'uint8array' - the type to create and return.   
+        fill_to_length:  (integer) if set, an array of the given length will be returned, 
+                         filled with encoded values copied from v.  
+                         Invalid truncated encodings are replaced with the
+                         fill_byte.
+        fill_byte:       (integer or string) ascii code or single character string used if needed to 
+                         fill buffer at the end to prevent truncated utf8.
+    
 
 For convenience, <code>value</code> may be:
 
@@ -55,12 +96,12 @@ For convenience, <code>value</code> may be:
 Convert an array-like object (buffer) to a javascript string.  
 
     options
-        beg:        index to start reading (inclusive)
-        end:        index to end reading (exclusive)
+        off:        index to start at
+        lim:        index to stop before  ( < lim )
         
         escape:     string expression, single ascii character or integer.  (default is '?')
         
-                    If ascii integer or character, illegal bytes will be replaced 1-for-1 by this value. 
+                    If ascii integer or string, illegal bytes will be replaced 1-for-1 by this value. 
                     If expression of the form "!{%H}", then strings of illegal bytes will be prefixed 
                     with the value before %H, such as '!{', and suffixed with value after %H, e.g. '}'
                     and bytes will be written as ascii hex between these values.
@@ -86,8 +127,8 @@ all other buffer contents in place.
 Fill up a buffer with a smaller buffer sample which may be a string or array-like object.
 
     options
-        beg:        index to start reading (inclusive)
-        end:        index to end reading (exclusive)
+        off:        index to start at
+        lim:        index to stop before ( < lim )
         escape:     handling for illegal bytes (same as string(), above) (default is '?')
         
 ## join(buffers, joinbuf)
@@ -102,5 +143,5 @@ by the <code>buffer()</code> function such as string or array of code points.
 ## escape_illegal(buffer, opt)
 
 Escape illegal characters in the given buffer in place or returning a new buffer. 
-Options <code>escape</code>, <code>beg</code>, and <code>end</code> work as they
-do with <code>string()</code>
+Options <code>escape</code>, <code>off</code>, and <code>lim</code> work as they
+do with <code>string()</code>, above.

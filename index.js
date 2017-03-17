@@ -5,6 +5,7 @@ var utf8_from_str = require('qb-utf8-from-str-tiny')
 var illegal_bytes = require('qb-utf8-illegal-bytes')
 
 function buffer(v, opt) {
+    opt = opt || {}
     switch(typeof v) {
         case 'number':
             v = [v]
@@ -20,7 +21,7 @@ function buffer(v, opt) {
     }
 
     var ret
-    if(opt && opt.fill_to_length != null) {
+    if(opt.fill_to_length != null) {
         ret = new Array(opt.fill_to_length)
         fill(ret, v, opt)
     } else {
@@ -34,9 +35,9 @@ function hex(v) {
 }
 
 // opt.escape is an ascii char
-function escape_ranges(buf, ranges, escape, opt) {
+function escape_ranges(src, ranges, escape, opt) {
     opt = opt || {}
-    if(!ranges.length) { return buf }
+    if(!ranges.length) { return src }
 
     // opt.escape can be an ascii character '?' for in-place substitution, or a string expression "!{%H}" for hex escape
     if(typeof escape === 'number' || escape.length === 1) {
@@ -44,34 +45,34 @@ function escape_ranges(buf, ranges, escape, opt) {
         var fill = buffer(escape)[0]
         ranges.forEach(function(range) {
             for(var i=range[0]; i<range[1]; i++) {
-                buf[i] = fill
+                src[i] = fill
             }
         })
-        return buf
+        return src
     } else {
         var parts = escape.split('%H')
         parts.length === 2 || err('opt.escape must be a single asci character or number or a string with %H like: "!{%H}"')
         var prefix = buffer(parts[0])
         var suffix = buffer(parts[1])
         // create new larger buffer with escaped values
-        var beg = opt.beg || 0
-        var end = opt.end == null ? buf.length : opt.end
-        var ret = [], ri =0, bi = beg
+        var off = opt.off || 0
+        var lim = opt.lim == null ? src.length : opt.lim
+        var ret = [], ri =0, bi = off
         ranges.forEach(function(range) {
-            var rbeg = beg > range[0] ? beg : range[0]
-            var rend = end < range[1] ? end : range[1]
+            var rbeg = off > range[0] ? off : range[0]
+            var rend = lim < range[1] ? lim : range[1]
             if(rbeg < rend) {
                 var i
                 while(bi < rbeg) {
-                    ret[ri++] = buf[bi++]
+                    ret[ri++] = src[bi++]
                 }
                 for(i = 0; i < prefix.length; i++) {
                     ret[ri++] = prefix[i]
                 }
                 while(bi < rend) {
                     // hex ascii high and low
-                    ret[ri++] = hex(buf[bi] >>> 4)
-                    ret[ri++] = hex(buf[bi] & 0xF)
+                    ret[ri++] = hex(src[bi] >>> 4)
+                    ret[ri++] = hex(src[bi] & 0xF)
                     bi++
                 }
                 for(i = 0; i < suffix.length; i++) {
@@ -79,30 +80,30 @@ function escape_ranges(buf, ranges, escape, opt) {
                 }
             }
         })
-        while(bi < end) { ret[ri++] = buf[bi++] }
+        while(bi < lim) { ret[ri++] = src[bi++] }
         return ret
     }
 }
 
-function fill(buf, sample, opt) {
+function fill(dst, sample, opt) {
     sample = buffer(sample)
     opt = opt || {}
-    var beg = opt.beg || 0
-    var end = opt.end == null ? buf.length : opt.end
+    var off = opt.off || 0
+    var lim = opt.lim == null ? dst.length : opt.lim
     var slen = sample.length
-    for(var base=beg; base<end; base+=slen) {
-        var lim = slen > end - base ? end - base : slen
-        for(var si=0; si<lim; si++) {
-            buf[si + base] = sample[si]
+    for(var base=off; base<lim; base+=slen) {
+        var slim = slen > lim - base ? lim - base : slen
+        for(var si=0; si<slim; si++) {
+            dst[si + base] = sample[si]
         }
     }
     // replace truncated code-point with padding character
-    if(buf[end - 1] >= 0x80) {
-        var i = end - 1
-        while((buf[i] & 0xC0) === 0x80 && i > beg) {i--}  // point to last non-trailing
+    if(dst[lim - 1] >= 0x80) {
+        var i = lim - 1
+        while((dst[i] & 0xC0) === 0x80 && i > off) {i--}  // point to last non-trailing
         escape_ranges(
-            buf,
-            illegal_bytes(buf, {beg: i, end: end}),
+            dst,
+            illegal_bytes(dst, i, lim),
             opt.escape || '?',
             opt
         )
@@ -112,9 +113,9 @@ function fill(buf, sample, opt) {
 // return the selection of UTF-8 encoded bytes as a javascript string.
 function string(buf, opt) {
     opt = opt || {}
-    var beg = opt.beg || 0
-    var end = opt.end == null ? buf.length : opt.end
-    buf = buf.slice(beg, end)
+    var off = opt.off || 0
+    var lim = opt.lim == null ? buf.length : opt.lim
+    buf = buf.slice(off, lim)
     buf = escape_ranges(buf, illegal_bytes(buf), opt.escape || '?')
     return utf8_to_str(buf)
 }
@@ -133,10 +134,11 @@ function join(buffers, joinbuf) {
     return ret
 }
 
-function escape_illegal(buf, opt) {
+function escape_illegal(src, opt) {
+    opt = opt || {}
     return escape_ranges(
-        buf,
-        illegal_bytes(buf, opt),
+        src,
+        illegal_bytes(src, opt.off, opt.lim),
         (opt && opt.escape) || '?',
         opt
     )

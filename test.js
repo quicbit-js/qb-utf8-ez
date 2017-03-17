@@ -28,16 +28,16 @@ test('string', function(t) {
             [ 'a',                             'opt',            'exp'                    ],
             [ [0x61],                          null,             'a'                      ],
             [ [0x61,0x62,0xF0,0x90,0x82,0x83], null,             'ab𐂃'        ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:0},    ''                       ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:1},    'a'                      ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:1,end:2},    'b'                      ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:1},          'b𐂃'          ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:1,end:6},    'b𐂃'          ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:5},    'ab???'           ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:5},    'ab???'           ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:4},    'ab??'           ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:3},    'ab?'           ],
-            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {beg:0,end:2},    'ab'           ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:0},    ''                       ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:1},    'a'                      ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:1,lim:2},    'b'                      ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:1},          'b𐂃'          ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:1,lim:6},    'b𐂃'          ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:5},    'ab???'           ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:5},    'ab???'           ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:4},    'ab??'           ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:3},    'ab?'           ],
+            [ [0x61,0x62,0xF0,0x90,0x82,0x83], {off:0,lim:2},    'ab'           ],
             [ [ 34,97,98,99,34,37 ],           null,             '"abc"%'                 ],
         ],
         utf8.string
@@ -64,9 +64,9 @@ test('escape_ranges - hex', function(t) {
             [ [0x6A,0x6B,0x6C],   [[0,1]],   '!{%H}',     null,            '!{6A}kl'      ],
             [ [0x6A,0x6B,0x6C],   [[1,2]],   '!{%H}',     null,            'j!{6B}l'      ],
             [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     null,            'jk!{6C}'      ],
-            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:1},         'k!{6C}'       ],
-            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:3},         ''         ],
-            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {beg:1, end:2},  'k'       ],
+            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {off:1},         'k!{6C}'       ],
+            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {off:3},         ''         ],
+            [ [0x6A,0x6B,0x6C],   [[2,3]],   '!{%H}',     {off:1, lim:2},  'k'       ],
         ],
         function(buf, ranges, escape, opt) {
             return utf8.string(utf8.escape_ranges(buf, ranges, escape, opt))
@@ -79,9 +79,9 @@ test('escape_illegal', function(t) {
     t.tableAssert([
         [ 'buf',       'opt',           'exp'                                   ],
         [ '在嚴',       null,            [0xE5,0x9C,0xA8,0xE5,0x9A,0xB4]        ],
-        [ '在嚴',       {beg:1},         [0xE5,0x3F,0x3F,0xE5,0x9A,0xB4]        ],
-        [ '在嚴',       {beg:2},         [0xE5,0x9C,0x3F,0xE5,0x9A,0xB4]        ],
-        [ '在嚴',       {beg:2,end:5},   [0xE5,0x9C,0x3F,0x3F,0x3F,0xB4]        ],
+        [ '在嚴',       {off:1},         [0xE5,0x3F,0x3F,0xE5,0x9A,0xB4]        ],
+        [ '在嚴',       {off:2},         [0xE5,0x9C,0x3F,0xE5,0x9A,0xB4]        ],
+        [ '在嚴',       {off:2,lim:5},   [0xE5,0x9C,0x3F,0x3F,0x3F,0xB4]        ],
     ], function(buf, opt) {
         return utf8.escape_illegal(utf8.buffer(buf), opt)
     })
@@ -110,12 +110,12 @@ test('fill', function(t) {
         [ 17,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃?'      ],
         [ 18,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃ñ'      ],
         [ 19,           'ñup𐂃',     null,               'ñup𐂃ñup𐂃ñu'     ],
-        [ 19,           'ñup𐂃',     {beg:1},            '?ñup𐂃ñup𐂃ñ'     ],     // buf[0] is undefined
-        [ 19,           'ñup𐂃',     {beg:2},            '??ñup𐂃ñup𐂃?'    ],
-        [ 19,           'ñup𐂃',     {beg:2, end:19},    '??ñup𐂃ñup𐂃?'    ],
-        [ 19,           'ñup𐂃',     {beg:2, end:18},    '??ñup𐂃ñup𐂃?'    ],
-        [ 19,           'ñup𐂃',     {beg:2, end:17},    '??ñup𐂃ñup?????'  ],
-        [ 19,           'ñup𐂃',     {beg:2, end:16},    '??ñup𐂃ñup?????'  ],
+        [ 19,           'ñup𐂃',     {off:1},            '?ñup𐂃ñup𐂃ñ'     ],     // buf[0] is undefined
+        [ 19,           'ñup𐂃',     {off:2},            '??ñup𐂃ñup𐂃?'    ],
+        [ 19,           'ñup𐂃',     {off:2, lim:19},    '??ñup𐂃ñup𐂃?'    ],
+        [ 19,           'ñup𐂃',     {off:2, lim:18},    '??ñup𐂃ñup𐂃?'    ],
+        [ 19,           'ñup𐂃',     {off:2, lim:17},    '??ñup𐂃ñup?????'  ],
+        [ 19,           'ñup𐂃',     {off:2, lim:16},    '??ñup𐂃ñup?????'  ],
 
     ], function(blen, sample, opt) {
         var buf = new Array(blen)
