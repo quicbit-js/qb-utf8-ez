@@ -91,20 +91,19 @@ For convenience, <code>value</code> may be:
 
 ... in any case, buffer(value) will return an array.
     
-## string(buf, options)
+## string([src][src-link], options)
 
 Convert an array-like object (buffer) to a javascript string.  
 
-    options
-        off:        index to start at
-        lim:        index to stop before  ( < lim )
-        
-        escape:     string expression, single ascii character or integer.  (default is '?')
-        
-                    If ascii integer or string, illegal bytes will be replaced 1-for-1 by this value. 
-                    If expression of the form "!{%H}", then strings of illegal bytes will be prefixed 
-                    with the value before %H, such as '!{', and suffixed with value after %H, e.g. '}'
-                    and bytes will be written as ascii hex between these values.
+options
+* **[off][off-link]**: index to start at
+* **[lim][lim-link]**: index to stop before
+* **escape**: string expression, single ascii character or integer.  (default is '?').
+    
+  If ascii integer or string, illegal bytes will be replaced 1-for-1 by this value. 
+  If expression of the form "!{%H}", then strings of illegal bytes will be prefixed 
+  with the value before %H, such as '!{', and suffixed with value after %H, e.g. '}'
+  and bytes will be written as ascii hex between these values.
 
 string() makes use of [qb-utf8-illegal-bytes](https://github.com/quicbit-js/qb-utf8-illegal-bytes)
 to automatically detect and escape illegal UTF-8 encodings.  The default decoding behavior
@@ -122,7 +121,7 @@ all other buffer contents in place.
     
     > ... some buffer with illegal characters !{F09082} then ok again.. 
 
-## fill(buf, sample, options)
+## fill(dst, sample, options)
 
 Fill up a buffer with a smaller buffer sample which may be a string or array-like object.
 
@@ -140,8 +139,10 @@ be an array of array-like objects with byte/integer values.  joinbuf can value a
 by the <code>buffer()</code> function such as string or array of code points.
 
 
-## escape_illegal(buffer, opt)
+## escape_illegal(src, opt)
 
-Escape illegal characters in the given buffer in place or returning a new buffer. 
+Return a buffer with illegal characters replaced.  If a single character or number escape is given, 
+the buffer will be changed in place and returned.  If an escape expression is given, a new
+(longer) buffer will be returned copied from the old with the escaped areas.
 Options <code>escape</code>, <code>off</code>, and <code>lim</code> work as they
 do with <code>string()</code>, above.
