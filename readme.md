@@ -40,6 +40,8 @@ have been updated to
 * **function ( [src][src-link], [off][off-link], [lim][lim-link] )** 
 * **function ( [src][src-link], {[off][off-link]:0, [lim][lim-link]:10 } )** 
 
+
+
 [src-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#src-source
 [off-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#off-offset
 [lim-link]: https://github.com/quicbit-js/qb-standard/blob/master/doc/variable-glossary.md#lim-limit
@@ -139,10 +141,14 @@ be an array of array-like objects with byte/integer values.  joinbuf can value a
 by the <code>buffer()</code> function such as string or array of code points.
 
 
-## escape_illegal(src, opt)
+## escape_illegal([src][src-link], opt)
 
 Return a buffer with illegal characters replaced.  If a single character or number escape is given, 
 the buffer will be changed in place and returned.  If an escape expression is given, a new
 (longer) buffer will be returned copied from the old with the escaped areas.
 Options <code>escape</code>, <code>off</code>, and <code>lim</code> work as they
 do with <code>string()</code>, above.
+
+## illegal_bytes([src][src-link], [off][off-link], [lim][lim-link])
+
+Return ranges of illegal UTF-8 encoding.  See [qb-utf8-illegal-bytes](https://github.com/quicbit-js/qb-utf8-illegal-bytes#illegal_bytessrc-off-lim)
