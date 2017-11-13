@@ -1,6 +1,6 @@
 {
   "name": "qb-utf8-ez",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Easy-to-use functions for encoding/decoding UTF-8 in the browser",
   "homepage": "https://github.com/quicbit-js/qb-utf8-ez",
   "url": "https://github.com/quicbit-js/qb-utf8-ez/issues",
@@ -17,7 +17,8 @@
     "test-kit": "^2.3.1"
   },
   "scripts": {
-    "test": "tap --coverage-report=html test.js"
+    "test": "tape test.js",
+    "cov": "tap --coverage-report=html test.js"
   },
   "files": [
     "index.js"
