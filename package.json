@@ -1,12 +1,13 @@
 {
   "name": "qb-utf8-ez",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Easy-to-use functions for encoding/decoding UTF-8 in the browser",
   "homepage": "https://github.com/quicbit-js/qb-utf8-ez",
   "url": "https://github.com/quicbit-js/qb-utf8-ez/issues",
   "email": "support@quicbit.com",
   "repository": "quicbit-js/qb-utf8-ez",
   "dependencies": {
+    "qb-utf8-compare": "^1.0.1",
     "qb-utf8-from-str-tiny": "^1.2.0",
     "qb-utf8-illegal-bytes": "^2.0.2",
     "qb-utf8-to-str-tiny": "^1.2.0"

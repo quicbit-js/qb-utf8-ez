@@ -3,6 +3,7 @@ function err (msg) { throw Error(msg) }
 var utf8_to_str = require('qb-utf8-to-str-tiny')
 var utf8_from_str = require('qb-utf8-from-str-tiny')
 var illegal_bytes = require('qb-utf8-illegal-bytes')
+var utf8_compare = require('qb-utf8-compare')
 
 function buffer (v, opt) {
   opt = opt || {}
@@ -146,6 +147,7 @@ function escape_illegal (src, opt) {
 
 module.exports = {
   buffer: buffer,
+  compare: utf8_compare,
   escape_illegal: escape_illegal,
   escape_ranges: escape_ranges,
   fill: fill,
